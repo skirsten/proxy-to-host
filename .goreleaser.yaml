@@ -17,6 +17,11 @@ dockers:
     build_flag_templates: ["--platform=linux/arm64/v8"]
 
 docker_manifests:
+  - name_template: ghcr.io/skirsten/proxy-to-host:latest
+    image_templates:
+      - ghcr.io/skirsten/proxy-to-host:{{ .Version }}-amd64
+      - ghcr.io/skirsten/proxy-to-host:{{ .Version }}-arm64v8
+
   - name_template: ghcr.io/skirsten/proxy-to-host:{{ .Version }}
     image_templates:
       - ghcr.io/skirsten/proxy-to-host:{{ .Version }}-amd64
