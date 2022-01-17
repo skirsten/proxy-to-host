@@ -1,14 +1,26 @@
 builds:
   - env: [CGO_ENABLED=0]
-    goos:
-      - linux
-    goarch:
-      - amd64
-      - arm64
+    goos: [linux]
+    goarch: [amd64, arm64]
+
+archives:
+  - format: binary
 
 dockers:
-  - image_templates: ["ghcr.io/skirsten/proxy-to-host:{{ .Version }}"]
-    dockerfile: Dockerfile
+  - image_templates: ["ghcr.io/skirsten/proxy-to-host:{{ .Version }}-amd64"]
+    use: buildx
+    build_flag_templates: ["--platform=linux/amd64"]
+
+  - image_templates: ["ghcr.io/skirsten/proxy-to-host:{{ .Version }}-arm64v8"]
+    use: buildx
+    goarch: arm64
+    build_flag_templates: ["--platform=linux/arm64/v8"]
+
+docker_manifests:
+  - name_template: ghcr.io/skirsten/proxy-to-host:{{ .Version }}
+    image_templates:
+      - ghcr.io/skirsten/proxy-to-host:{{ .Version }}-amd64
+      - ghcr.io/skirsten/proxy-to-host:{{ .Version }}-arm64v8
 
 snapshot:
   name_template: "{{ incpatch .Version }}-next"
