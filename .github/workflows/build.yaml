@@ -1,0 +1,37 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    env:
+      KO_DOCKER_REPO: ghcr.io/${{ github.repository_owner }}
+      KO_VERSION: "0.9.3"
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-go@v2
+        with: { go-version: "1.17" }
+
+      - name: install ko
+        run: |
+          cd /usr/local/bin
+          curl -s -L https://github.com/google/ko/releases/download/v${KO_VERSION}/ko_${KO_VERSION}_Linux_x86_64.tar.gz | tar xzf - ko
+          chmod +x ko
+
+      - uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: ko publish ghcr.io/${{ github.repository }}
+        run: ko publish -B --platform=all github.com/${{ github.repository }}
