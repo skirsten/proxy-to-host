@@ -56,6 +56,7 @@ func run() error {
 			if err != nil {
 				log.Println(err)
 			}
+			conn.Close()
 		})()
 	}
 }
